@@ -11,19 +11,66 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private User sender;
+    @Column(name = "sender_id")
+    private Long sender;
 
-    @ManyToOne
-    @JoinColumn(name = "receiver_id")
-    private User receiver;
+    @Column(name = "receiver_id")
+    private Long receiver;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date transactionDate;
 
     private BigDecimal amount;
+    
+    public Transaction(){
 
-    // Constructors, getters, and setters
+    }
+
+    public Transaction(Long senderId, Long receiverId, BigDecimal amount) {
+        this.sender = senderId;
+        this.receiver = receiverId;
+        this.amount = amount;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        transactionDate = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        transactionDate = new Date();
+    }
+
+    public Long getSender() {
+        return this.sender;
+    }
+
+    public Long getReceiver() {
+        return this.receiver;
+    }
+
+    public BigDecimal getAmount() {
+        return this.amount;
+    }
+
+    public Date getTransactionDate(){
+        return this.transactionDate;
+    }
+
+    public void setSender(Long senderId) {
+        this.sender = senderId;
+    }
+
+    public void setReceiver(Long receiverId) {
+        this.receiver = receiverId;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+
+
 }
 
