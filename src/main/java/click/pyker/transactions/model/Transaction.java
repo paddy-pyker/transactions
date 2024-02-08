@@ -3,10 +3,12 @@ package click.pyker.transactions.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+
 import jakarta.persistence.*;
 
 @Entity
 public class Transaction {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -75,12 +77,9 @@ public class Transaction {
     }
 
     public boolean isValid() {
+    
+        return this.amount.compareTo(BigDecimal.ZERO) > 0 ;
 
-        if(this.sender >= 0 && this.receiver >= 0 && this.amount.compareTo(BigDecimal.ZERO) > 0){
-            return true;
-        } 
-
-        return false;
     }
 
 }

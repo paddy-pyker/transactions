@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import click.pyker.transactions.model.User;
 import click.pyker.transactions.repository.UserRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -20,9 +21,9 @@ public class UserService {
 
 
     // Create a new user return the saved user
-    public User createNewUser(String username) {
+    public User createNewUser(String username, BigDecimal accountBalance) {
         
-        User newuUser = new User(username);
+        User newuUser = new User(username,accountBalance);
         return userRepository.save(newuUser);
        
     }

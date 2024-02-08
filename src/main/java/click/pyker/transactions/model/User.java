@@ -1,6 +1,8 @@
 package click.pyker.transactions.model;
 
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -9,13 +11,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public String username;
+    private BigDecimal accountBalance;
+
+    private String username;
     
     public User(){
     }
 
-    public User(String username){
+    public User(String username, BigDecimal accountBalance){
         this.username = username;
+        this.accountBalance = accountBalance;
     }
 
     public void setId(Long id) {
@@ -24,6 +29,14 @@ public class User {
 
     public Long getId(){
         return this.id;
+    }
+
+    public void setAccountBalance(BigDecimal balance) {
+        this.accountBalance = balance;
+    }
+
+    public BigDecimal getAccountBalance(){
+        return this.accountBalance;
     }
 
     public void setUsername(String username){

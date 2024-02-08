@@ -28,7 +28,7 @@ public class UserController {
      // Create a new user and return the saved user
      @PostMapping("/create")
      public ResponseEntity<User> createNewUser(@RequestBody User newUser) {
-         User savedUser = userService.createNewUser(newUser.username);
+         User savedUser = userService.createNewUser(newUser.getUsername(),newUser.getAccountBalance());
          return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
      }
 }

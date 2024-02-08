@@ -12,6 +12,7 @@ import click.pyker.transactions.model.Transaction;
 import click.pyker.transactions.model.User;
 import click.pyker.transactions.repository.TransactionRepository;
 import click.pyker.transactions.repository.UserRepository;
+import click.pyker.transactions.exception.InvalidTransactionException;
 import click.pyker.transactions.exception.TransactionNotFoundException;
 
 
@@ -45,10 +46,24 @@ public class TransactionService {
         User receiver = userRepository.findById(transactionRequest.getReceiver()).orElse(null);
 
         if (sender != null && receiver != null) {
-            Transaction newTransaction = new Transaction(sender.getId(), receiver.getId(), transactionRequest.getAmount());
-            Transaction savedTransaction = transactionRepository.save(newTransaction);
-            logger.info("new transaction with id " + savedTransaction.getId() + " created");
-            return savedTransaction;
+
+            // senders account must be greater or equal to amount to transfer
+            if((sender.getAccountBalance().compareTo(transactionRequest.getAmount()) >= 0)){
+
+                sender.setAccountBalance(sender.getAccountBalance().subtract(transactionRequest.getAmount()));
+                receiver.setAccountBalance(receiver.getAccountBalance().add(transactionRequest.getAmount()));
+
+                userRepository.save(sender);
+                userRepository.save(receiver);
+
+                Transaction newTransaction = new Transaction(sender.getId(), receiver.getId(), transactionRequest.getAmount());
+                Transaction savedTransaction = transactionRepository.save(newTransaction);
+                logger.info("new transaction with id " + savedTransaction.getId() + " created");
+                return savedTransaction;
+
+             } else {
+                throw new InvalidTransactionException("senders account must be greater or equal to amount to transfer");
+             }
 
         } else {
             throw new TransactionNotFoundException("Sender or Receipient not found."); 
@@ -64,11 +79,24 @@ public class TransactionService {
             User receiver = userRepository.findById(transactionRequest.getReceiver()).orElse(null);
 
             if (sender != null && receiver != null) {
-                existingTransaction.setSender(sender.getId());
-                existingTransaction.setReceiver(receiver.getId());
-                existingTransaction.setAmount(transactionRequest.getAmount());
-                logger.info("existing transaction with id " + existingTransaction.getId() + " modified");
-                return transactionRepository.save(existingTransaction);
+
+                // senders account must be greater or equal to amount to transfer
+                if((sender.getAccountBalance().compareTo(transactionRequest.getAmount()) >= 0)){
+                    sender.setAccountBalance(sender.getAccountBalance().subtract(transactionRequest.getAmount()));
+                    receiver.setAccountBalance(receiver.getAccountBalance().add(transactionRequest.getAmount()));
+
+                    userRepository.save(sender);
+                    userRepository.save(receiver);
+
+                    existingTransaction.setSender(sender.getId());
+                    existingTransaction.setReceiver(receiver.getId());
+                    existingTransaction.setAmount(transactionRequest.getAmount());
+                    logger.info("existing transaction with id " + existingTransaction.getId() + " modified");
+                    return transactionRepository.save(existingTransaction);
+                } else {
+                    throw new InvalidTransactionException("senders account must be greater or equal to amount to transfer");
+                }
+
             } else {
                 throw new TransactionNotFoundException("Sender or Receipient not found."); 
             }
