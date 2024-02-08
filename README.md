@@ -9,23 +9,17 @@
 
 🎯 STEP 2
 
-    set up mysql database credentials in src/main/resources/application.properties
+    docker build -t transactions:latest .
 
 <br>
 
 🎯 STEP 3
 
-    docker build -t transactions:latest .
-
-<br>
-
-🎯 STEP 4
-
     docker run -dp 8080:8080 transactions
 
 <br>
 
-🎯 STEP 5
+🎯 STEP 4
 
     create user accounts first, who will make transactions to one another:
 
@@ -38,7 +32,7 @@
 
 <br>
 
-🎯 STEP 6
+🎯 STEP 5
 
     return all users with their id which is used for making transactions
 
