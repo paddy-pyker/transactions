@@ -51,7 +51,7 @@
     the application can now be used as per the requirements. eg: make transactions between two users
 
     curl -X POST http://localhost:8080/transactions/create   \
-         -H 'Content-Type: application/json'          \
+         -H 'Content-Type: application/json'                 \
          -d '{ 
              "sender": "1",
              "receiver":"2",

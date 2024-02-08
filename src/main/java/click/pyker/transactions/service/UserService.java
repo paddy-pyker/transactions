@@ -22,9 +22,7 @@ public class UserService {
 
     // Create a new user return the saved user
     public User createNewUser(String username, BigDecimal accountBalance) {
-        
         User newuUser = new User(username,accountBalance);
         return userRepository.save(newuUser);
-       
     }
 }
