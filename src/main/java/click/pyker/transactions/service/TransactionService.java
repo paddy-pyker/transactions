@@ -7,11 +7,11 @@ import org.springframework.data.domain.PageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import click.pyker.transactions.model.Transaction;
 import click.pyker.transactions.model.User;
 import click.pyker.transactions.repository.TransactionRepository;
 import click.pyker.transactions.repository.UserRepository;
+import click.pyker.transactions.exception.TransactionNotFoundException;
 
 
 @Service
@@ -44,10 +44,12 @@ public class TransactionService {
 
         if (sender != null && receiver != null) {
             Transaction newTransaction = new Transaction(sender.getId(), receiver.getId(), transactionRequest.getAmount());
-            return transactionRepository.save(newTransaction);
+            Transaction savedTransaction = transactionRepository.save(newTransaction);
+            logger.info("new transaction with id " + savedTransaction.getId() + " created");
+            return savedTransaction;
+
         } else {
-            logger.debug("Handle if sender or receiver is not found");
-            return null; // Handle if sender or receiver is not found
+            throw new TransactionNotFoundException("Sender or Receipient not found."); 
         }
     }
 
@@ -62,14 +64,13 @@ public class TransactionService {
                 existingTransaction.setSender(sender.getId());
                 existingTransaction.setReceiver(receiver.getId());
                 existingTransaction.setAmount(transactionRequest.getAmount());
+                logger.info("existing transaction with id " + existingTransaction.getId() + " modified");
                 return transactionRepository.save(existingTransaction);
             } else {
-                logger.debug("Handle if sender or receiver is not found");
-                return null; // Handle if sender or receiver is not found
+                throw new TransactionNotFoundException("Sender or Receipient not found."); 
             }
         } else {
-            logger.debug("Handle if transaction is not found");
-            return null; // Handle if transaction is not found
+            throw new TransactionNotFoundException("Transaction id not found."); 
         }
     }
 
@@ -77,6 +78,7 @@ public class TransactionService {
     public boolean deleteTransaction(Long id) {
         if (transactionRepository.existsById(id)) {
             transactionRepository.deleteById(id);
+            logger.info("existing transaction with id " + id + " deleted");
             return true;
         } else {
             return false;

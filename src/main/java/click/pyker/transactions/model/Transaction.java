@@ -46,6 +46,10 @@ public class Transaction {
         return this.sender;
     }
 
+    public Long getId() {
+        return this.id;
+    }
+
     public Long getReceiver() {
         return this.receiver;
     }
@@ -70,7 +74,14 @@ public class Transaction {
         this.amount = amount;
     }
 
+    public boolean isValid() {
 
+        if(this.sender >= 0 && this.receiver >= 0 && this.amount.compareTo(BigDecimal.ZERO) > 0){
+            return true;
+        } 
+
+        return false;
+    }
 
 }
 

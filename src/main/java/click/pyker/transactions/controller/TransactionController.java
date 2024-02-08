@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 
+import click.pyker.transactions.exception.TransactionNotFoundException;
+import click.pyker.transactions.exception.InvalidTransactionException;
 import click.pyker.transactions.model.Transaction;
 import click.pyker.transactions.service.TransactionService;
 
@@ -34,25 +36,34 @@ public class TransactionController {
         if (transaction != null) {
             return ResponseEntity.ok(transaction);
         } else {
-            return ResponseEntity.notFound().build();
+            throw new TransactionNotFoundException("Transaction with ID " + id + " not found.");
         }
-    }
+    } 
 
     // Create a new transaction and return the saved transaction
     @PostMapping("/create")
     public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transactionRequest) {
-        Transaction savedTransaction = transactionService.createTransaction(transactionRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+        if (transactionRequest.isValid()){
+            Transaction savedTransaction = transactionService.createTransaction(transactionRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+        } else {
+            throw new InvalidTransactionException("Invalid transaction data provided.");
+        }
+        
     }
 
     // Updates an existing transaction based on the given ID and new transaction data
     @PutMapping("/update/{id}")
     public ResponseEntity<Transaction> updateTransaction(@PathVariable Long id, @RequestBody Transaction transactionRequest) {
-        Transaction updatedTransaction = transactionService.updateTransaction(id, transactionRequest);
-        if (updatedTransaction != null) {
-            return ResponseEntity.ok(updatedTransaction);
+        if (transactionRequest.isValid()){
+            Transaction updatedTransaction = transactionService.updateTransaction(id, transactionRequest);
+            if (updatedTransaction != null) {
+              return ResponseEntity.ok(updatedTransaction);
+         } else {
+               throw new TransactionNotFoundException("Transaction with ID " + id + " not found.");
+          }
         } else {
-            return ResponseEntity.notFound().build();
+            throw new InvalidTransactionException("Invalid transaction data provided.");
         }
     }
 
@@ -63,7 +74,7 @@ public class TransactionController {
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.notFound().build();
+            throw new TransactionNotFoundException("Transaction with ID " + id + " not found.");
         }
     }
 }
