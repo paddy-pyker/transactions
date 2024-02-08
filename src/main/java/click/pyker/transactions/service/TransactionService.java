@@ -2,6 +2,10 @@ package click.pyker.transactions.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import click.pyker.transactions.model.Transaction;
@@ -9,9 +13,6 @@ import click.pyker.transactions.model.User;
 import click.pyker.transactions.repository.TransactionRepository;
 import click.pyker.transactions.repository.UserRepository;
 
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class TransactionService {
@@ -24,9 +25,10 @@ public class TransactionService {
     @Autowired
     private UserRepository userRepository;
 
-    // Return a list of all transactions
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+
+    // Return a paginated list of transactions
+    public Page<Transaction> getAllTransactions(int page, int size) {
+        return transactionRepository.findAll(PageRequest.of(page, size));
     }
 
     // Return a transaction based on the given ID

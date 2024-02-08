@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
 import click.pyker.transactions.model.Transaction;
 import click.pyker.transactions.service.TransactionService;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/transactions")
@@ -17,10 +17,13 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
-    // Return a list of all transactions
+
+    // Return a paginated list of transactions
     @GetMapping("/")
-    public ResponseEntity<List<Transaction>> getAllTransactions() {
-        List<Transaction> transactions = transactionService.getAllTransactions();
+    public ResponseEntity<Page<Transaction>> getAllTransactions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<Transaction> transactions = transactionService.getAllTransactions(page, size);
         return ResponseEntity.ok(transactions);
     }
 
