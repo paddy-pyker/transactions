@@ -40,7 +40,7 @@
 
 <br>
 
-🎯 STEP 7
+🎯 STEP 6
 
     the application can now be used as per the requirements. eg: make transactions between two users
 
