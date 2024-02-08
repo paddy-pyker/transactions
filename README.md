@@ -11,6 +11,9 @@
 
     docker build -t transactions:latest .
 
+
+    nb: ensure internet connection is pretty stable else the build will fail
+
 <br>
 
 🎯 STEP 3
