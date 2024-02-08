@@ -18,7 +18,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Return a list of all transactions
+    // Return all users
     @GetMapping("/")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
