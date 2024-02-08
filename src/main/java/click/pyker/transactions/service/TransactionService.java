@@ -34,18 +34,18 @@ public class TransactionService {
     }
 
     // Return a transaction based on the given ID
+    @SuppressWarnings("null")
     public Transaction getTransactionById(Long id) {
-        return transactionRepository.findById(id).orElse(null);
+        return transactionRepository.findById(id).orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
     }
 
     // Create a new transaction and return the saved transaction
+    @SuppressWarnings("null")
     @Transactional
     public Transaction createTransaction(Transaction transactionRequest) {
         
-        User sender = userRepository.findById(transactionRequest.getSender()).orElse(null);
-        User receiver = userRepository.findById(transactionRequest.getReceiver()).orElse(null);
-
-        if (sender != null && receiver != null) {
+        User sender = userRepository.findById(transactionRequest.getSender()).orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
+        User receiver = userRepository.findById(transactionRequest.getReceiver()).orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
 
             // senders account must be greater or equal to amount to transfer
             if((sender.getAccountBalance().compareTo(transactionRequest.getAmount()) >= 0)){
@@ -59,50 +59,43 @@ public class TransactionService {
                 Transaction newTransaction = new Transaction(sender.getId(), receiver.getId(), transactionRequest.getAmount());
                 Transaction savedTransaction = transactionRepository.save(newTransaction);
                 logger.info("new transaction with id " + savedTransaction.getId() + " created");
+
                 return savedTransaction;
 
-             } else {
-                throw new InvalidTransactionException("senders account must be greater or equal to amount to transfer");
-             }
-
         } else {
-            throw new TransactionNotFoundException("Sender or Receipient not found."); 
+            throw new InvalidTransactionException("senders account must be greater or equal to amount to transfer");
         }
     }
 
     // Updates an existing transaction based on the given ID and new transaction data
+    @SuppressWarnings("null")
     @Transactional
     public Transaction updateTransaction(Long id, Transaction transactionRequest) {
-        Transaction existingTransaction = transactionRepository.findById(id).orElse(null);
-        if (existingTransaction != null) {
-            User sender = userRepository.findById(transactionRequest.getSender()).orElse(null);
-            User receiver = userRepository.findById(transactionRequest.getReceiver()).orElse(null);
+        Transaction existingTransaction = transactionRepository.findById(id).orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
+        
+            User sender = userRepository.findById(transactionRequest.getSender()).orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
+            User receiver = userRepository.findById(transactionRequest.getReceiver()).orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
+            
 
-            if (sender != null && receiver != null) {
+             // senders account must be greater or equal to amount to transfer
+            if((sender.getAccountBalance().compareTo(transactionRequest.getAmount()) >= 0)){
+                sender.setAccountBalance(sender.getAccountBalance().subtract(transactionRequest.getAmount()));
+                receiver.setAccountBalance(receiver.getAccountBalance().add(transactionRequest.getAmount()));
 
-                // senders account must be greater or equal to amount to transfer
-                if((sender.getAccountBalance().compareTo(transactionRequest.getAmount()) >= 0)){
-                    sender.setAccountBalance(sender.getAccountBalance().subtract(transactionRequest.getAmount()));
-                    receiver.setAccountBalance(receiver.getAccountBalance().add(transactionRequest.getAmount()));
+                userRepository.save(sender);
+                userRepository.save(receiver);
 
-                    userRepository.save(sender);
-                    userRepository.save(receiver);
+                existingTransaction.setSender(sender.getId());
+                existingTransaction.setReceiver(receiver.getId());
+                existingTransaction.setAmount(transactionRequest.getAmount());
+                logger.info("existing transaction with id " + existingTransaction.getId() + " modified");
 
-                    existingTransaction.setSender(sender.getId());
-                    existingTransaction.setReceiver(receiver.getId());
-                    existingTransaction.setAmount(transactionRequest.getAmount());
-                    logger.info("existing transaction with id " + existingTransaction.getId() + " modified");
-                    return transactionRepository.save(existingTransaction);
-                } else {
-                    throw new InvalidTransactionException("senders account must be greater or equal to amount to transfer");
-                }
+                return transactionRepository.save(existingTransaction);
+                
 
             } else {
-                throw new TransactionNotFoundException("Sender or Receipient not found."); 
+                throw new InvalidTransactionException("senders account must be greater or equal to amount to transfer");
             }
-        } else {
-            throw new TransactionNotFoundException("Transaction id not found."); 
-        }
     }
 
     // Deletes a transaction based on the given ID
@@ -110,7 +103,9 @@ public class TransactionService {
         if (transactionRepository.existsById(id)) {
             transactionRepository.deleteById(id);
             logger.info("existing transaction with id " + id + " deleted");
+
             return true;
+            
         } else {
             return false;
         }

@@ -33,11 +33,8 @@ public class TransactionController {
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
         Transaction transaction = transactionService.getTransactionById(id);
-        if (transaction != null) {
-            return ResponseEntity.ok(transaction);
-        } else {
-            throw new TransactionNotFoundException("Transaction with ID " + id + " not found.");
-        }
+        
+        return ResponseEntity.ok(transaction);   
     } 
 
     // Create a new transaction and return the saved transaction
@@ -56,12 +53,10 @@ public class TransactionController {
     @PutMapping("/update/{id}")
     public ResponseEntity<Transaction> updateTransaction(@PathVariable Long id, @RequestBody Transaction transactionRequest) {
         if (transactionRequest.isValid()){
+            
             Transaction updatedTransaction = transactionService.updateTransaction(id, transactionRequest);
-            if (updatedTransaction != null) {
-              return ResponseEntity.ok(updatedTransaction);
-         } else {
-               throw new TransactionNotFoundException("Transaction with ID " + id + " not found.");
-          }
+            return ResponseEntity.ok(updatedTransaction);
+
         } else {
             throw new InvalidTransactionException("Invalid transaction data provided.");
         }
