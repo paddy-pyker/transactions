@@ -16,8 +16,8 @@ FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /server
 
-COPY --from=build /server/target/transactionservice-0.0.1-SNAPSHOT.jar /server/transactionservice-0.0.1-SNAPSHOT.jar
+COPY --from=build /server/target/transactions-0.0.1-SNAPSHOT.jar /server/transactions-0.0.1-SNAPSHOT.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "transactionservice-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "transactions-0.0.1-SNAPSHOT.jar"]

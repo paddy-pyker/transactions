@@ -2,6 +2,7 @@ package click.pyker.transactions.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ public class TransactionService {
     }
 
     // Create a new transaction and return the saved transaction
+    @Transactional
     public Transaction createTransaction(Transaction transactionRequest) {
         
         User sender = userRepository.findById(transactionRequest.getSender()).orElse(null);
@@ -54,6 +56,7 @@ public class TransactionService {
     }
 
     // Updates an existing transaction based on the given ID and new transaction data
+    @Transactional
     public Transaction updateTransaction(Long id, Transaction transactionRequest) {
         Transaction existingTransaction = transactionRepository.findById(id).orElse(null);
         if (existingTransaction != null) {
